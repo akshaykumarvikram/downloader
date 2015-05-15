@@ -10,34 +10,34 @@ else:
     import urlparse
 #from download import filename
 #url = "https://www.youtube.com/watch?v=LxQq8HTtb4A"
-def download1():    
+def download1(url):    
     video = pafy.new(url)
     print (video.title)
     print (video.rating)
     streams = video.streams
     i=0
+    p=''
     for s in streams:
-        print(s,i)
+        print(s.resolution,i)
         print(s.url)
+        p=p+s.resolution+'   '+str(i)+'\n'
         i=i+1
+    Label( root, text=" {}".format(p)).grid(row=5,column=0)
+    Label(root,text="select resolution").grid(row=4,column=0)
+    
     #j=input()
 
 
 
-def download(url,filename, desc=None):
+def download(url,filename,resol, desc=None):
     video = pafy.new(url)
     print (video.title)
     print (video.rating)
     streams = video.streams
-    i=0
-    for s in streams:
-        print(s,i)
-        print(s.url)
-        i=i+1
-    #j=input()
-    u = urllib2.urlopen(streams[5].url)
+    l=len(streams)-1
+    u = urllib2.urlopen(streams[int(resol)].url)
 
-    scheme, netloc, path, query, fragment = urlparse.urlsplit(streams[5].url)
+    scheme, netloc, path, query, fragment = urlparse.urlsplit(streams[int(resol)].url)
     #filename = "d:/{}.mp4".format("video")
     with open(filename, 'wb') as f:
         meta = u.info()
@@ -59,7 +59,7 @@ def download(url,filename, desc=None):
             if file_size:
                 status += "   [{0:6.2f}%]".format(file_size_dl * 100 / file_size)
             status += chr(13)
-            Label( root, text="Downloading: {0} Bytes: {1}".format(status, file_size)).grid(row=3,column=0)
+            Label( root, text="Done:{0} size: {1}kb".format(file_size_dl * 100 / file_size, file_size/1024)).grid(row=6,column=0)
             #root.mainloop()
             print(status, end="")
         print()
@@ -80,8 +80,10 @@ if __name__ == '__main__':
     e1.grid(row=0,column=1)
     e2= Entry(root)
     e2.grid(row=1,column=1)
-    Button(root,command=lambda:download(e1.get(),e2.get()) ,text='Download' ).grid(row=2,column=0)
+    e3 = Entry(root)
+    e3.grid(row=4,column=1)
+    Button(root,command=lambda:download(e1.get(),e2.get(),e3.get()) ,text='Download' ).grid(row=2,column=0)
     Button(root,text='Exit' ,command=lambda:close_window() ).grid(row=2,column=1)
-    #Button(root,text='About' ,command=lambda:abt()).grid(row=3,column=1)
+    Button(root,text='Check' ,command=lambda:download1(e1.get())).grid(row=3,column=0)
     #Button(root,text='Instructions' ,command=lambda:readme()).grid(row=4,column=0)
     root.mainloop()
